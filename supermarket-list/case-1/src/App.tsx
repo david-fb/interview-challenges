@@ -1,6 +1,6 @@
 import type {Item} from "./types";
 
-import {useEffect, useState} from "react";
+import {useEffect, useState, useRef} from "react";
 
 import styles from "./App.module.scss";
 import api from "./api";
@@ -11,6 +11,7 @@ interface Form extends HTMLFormElement {
 
 function App() {
   const [items, setItems] = useState<Item[]>([]);
+  const form = useRef(null);
 
   function handleToggle(id: Item["id"]) {
     setItems((items) =>
@@ -19,6 +20,16 @@ function App() {
   }
 
   function handleAdd(event: React.ChangeEvent<Form>) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const newTask: Item = {
+      id: +new Date(),
+      text: formData.get("text")?.toString() || "",
+      completed: false,
+    };
+
+    setItems([...items, newTask]);
+    event.target.reset();
     // Should implement
   }
 
@@ -30,10 +41,12 @@ function App() {
     api.list().then(setItems);
   }, []);
 
+  if (!items.length) return <p>Loading...</p>;
+
   return (
     <main className={styles.main}>
       <h1>Supermarket list</h1>
-      <form onSubmit={handleAdd}>
+      <form ref={form} onSubmit={handleAdd}>
         <input name="text" type="text" />
         <button>Add</button>
       </form>
