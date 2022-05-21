@@ -15,20 +15,33 @@ function App() {
 
   function handleToggle(id: Item["id"]) {
     // Should implement
+
+    setItems((items) =>
+      items.map((item) => {
+        if (item.id === id) {
+          return {...item, completed: !item.completed};
+        }
+
+        return item;
+      }),
+    );
   }
 
   function handleAdd(event: React.ChangeEvent<Form>) {
     event.preventDefault();
+    let newTask = event.target.text.value;
 
-    setItems((items) =>
-      items.concat({
-        id: +new Date(),
-        completed: false,
-        text: event.target.text.value,
-      }),
-    );
+    if (newTask) {
+      setItems((items) =>
+        items.concat({
+          id: +new Date(),
+          completed: false,
+          text: newTask,
+        }),
+      );
 
-    event.target.text.value = "";
+      event.target.text.value = "";
+    }
   }
 
   function handleRemove(id: Item["id"]) {
